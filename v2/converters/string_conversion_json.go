@@ -25,12 +25,19 @@ func NewStringConverter(langID int) IStringConverter {
 	greader, _ := gzip.NewReader(bytes.NewReader(convData))
 	defer greader.Close()
 
-	var mapping map[int]*JStringConverter
-	_ = json.NewDecoder(greader).Decode(&mapping)
+	var mapping map[int]json.RawMessage
+	if err := json.NewDecoder(greader).Decode(&mapping); err != nil {
+		panic(err)
+	}
 
-	jsc := mapping[langID]
-	if jsc == nil {
+	raw := mapping[langID]
+	if raw == nil {
 		return nil
+	}
+
+	var jsc JStringConverter
+	if err := json.Unmarshal(raw, &jsc); err != nil {
+		panic(err)
 	}
 
 	return &StringConverter{
