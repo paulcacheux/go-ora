@@ -18,9 +18,9 @@ type StringConverter struct {
 	CharWidth int
 	eReplace  int
 	dReplace  int
-	dBuffer   []int
-	dBuffer2  []int
-	eBuffer   map[int]int
+	dBuffer   []uint32
+	dBuffer2  []uint32
+	eBuffer   map[uint16]uint32
 	leading   map[int]int
 }
 
@@ -108,7 +108,7 @@ func (conv *StringConverter) Encode(input string) []byte {
 		}
 		output := make([]byte, 0, len(temp))
 		for x := 0; x < len(temp); x++ {
-			if ch, ok := conv.eBuffer[int(temp[x])]; ok {
+			if ch, ok := conv.eBuffer[temp[x]]; ok {
 				if ch < 0x100 {
 					output = append(output, uint8(ch))
 				} else if ch < 0x10000 {
